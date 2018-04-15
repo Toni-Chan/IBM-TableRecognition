@@ -1,0 +1,14 @@
+﻿  main.cpp
+  TableImage.cpp
+d:\cv\cv_table\cv_table\tableimage.cpp(124): warning C4244: “初始化”: 从“double”转换到“int”，可能丢失数据
+d:\cv\cv_table\cv_table\tableimage.cpp(154): warning C4267: “=”: 从“size_t”转换到“int”，可能丢失数据
+d:\cv\cv_table\cv_table\tableimage.cpp(188): warning C4244: “参数”: 从“int”转换到“float”，可能丢失数据
+d:\cv\cv_table\cv_table\tableimage.cpp(189): warning C4244: “参数”: 从“int”转换到“float”，可能丢失数据
+d:\cv\cv_table\cv_table\tableimage.cpp(190): warning C4244: “参数”: 从“int”转换到“float”，可能丢失数据
+d:\cv\cv_table\cv_table\tableimage.cpp(191): warning C4244: “参数”: 从“int”转换到“float”，可能丢失数据
+d:\cv\cv_table\cv_table\tableimage.cpp(471): warning C4244: “=”: 从“float”转换到“int”，可能丢失数据
+d:\cv\cv_table\cv_table\tableimage.cpp(475): warning C4244: “=”: 从“float”转换到“int”，可能丢失数据
+d:\cv\cv_table\cv_table\tableimage.cpp(484): warning C4244: “=”: 从“float”转换到“int”，可能丢失数据
+d:\cv\cv_table\cv_table\tableimage.cpp(488): warning C4244: “=”: 从“float”转换到“int”，可能丢失数据
+  CV_table.vcxproj -> D:\cv\CV_table\x64\Debug\CV_table.exe
+  CV_table.vcxproj -> D:\cv\CV_table\x64\Debug\CV_table.pdb (Full PDB)
