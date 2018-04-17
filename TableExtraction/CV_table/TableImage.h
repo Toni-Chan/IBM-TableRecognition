@@ -5,6 +5,7 @@
 #include <iostream>
 #include <algorithm>
 #include <direct.h>
+#include "TableImageInfo.h"
 
 using namespace std;
 using namespace cv;
@@ -17,7 +18,8 @@ class TableImage {
 	// ID for file managing
 	int id;		
 	// input path
-	String filename;	
+	String filename;
+	String directory;
 	// original image, only used for backup
 	Mat oriImg;			
 	// processed image, is changed in size and channels while processing
@@ -31,8 +33,14 @@ class TableImage {
 	// struct to store horizontial and vertical lines
 	vector<Vec3i> lineHor, lineVer;	
 	// if the image need to be affined(spinned), record its value
-	double alignDegree;		
+	double alignDegree;	
+	// struct to store image info
+	TableImageInfo info;
+	// make the center of processed image in processing
+	Point center;
 
+	// Initializer of info
+	void initInfo();
 	// Inner check function to get validity of object
 	bool isValid();		
 	// Obsoleted, used to be testing fuction
@@ -70,8 +78,9 @@ class TableImage {
 public:
 	// Image is cutted into pieces by rectanles
 	vector<Rect> cuttingRects;
-	TableImage(int id, String name) :id(id), filename(name) {
+	TableImage(int id, String name) :id(id), filename(name), info(name) {
 		readImage();
+		initInfo();
 	}
 	// Input image through path, will print error message while encounter failure
 	void readImage();
@@ -116,4 +125,14 @@ inline void TableImage::show(String name, Mat& pic, int scale = 1) {
 	}
 	else
 		imshow(name, pic);
+}
+
+inline void TableImage::initInfo() {
+	if (isValid()) {
+		info.setImageWidth(oriImg.cols);
+		info.setImageHeight(oriImg.rows);
+	}
+	else {
+		return;
+	}
 }

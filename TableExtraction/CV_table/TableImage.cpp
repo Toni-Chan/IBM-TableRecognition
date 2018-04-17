@@ -6,6 +6,7 @@ void TableImage::startProcess() {
 		return;
 	}
 	cout << "Processing image: " << filename << endl;
+	//workflow of process
 	cloneOriImage();
 	eliminateNoise();
 	makeAlignment();
@@ -16,14 +17,15 @@ void TableImage::startProcess() {
 }
 
 void TableImage::cloneOriImage() {
-	cout << "cloning image..." << endl;
+	//cout << "cloning image..." << endl;
 	cutImg = oriImg.clone();
 	proImg = ~oriImg.clone();
-	cout << "clone complete" << endl;
+	center = Point(oriImg.cols / 2, oriImg.rows / 2);
+	//cout << "clone complete" << endl;
 }
 
 void TableImage::eliminateNoise() {
-	cout << "eliminating noise" << endl;
+	//cout << "eliminating noise" << endl;
 	Mat temp = proImg.clone();
 
 	// blocksize and C
@@ -36,11 +38,11 @@ void TableImage::eliminateNoise() {
 	erode(proImg, proImg, kernelE);
 
 	// show("oriGray", proImg);
-	cout << "eliminate complete" << endl;
+	//cout << "eliminate complete" << endl;
 }
 
 void TableImage::makeAlignment() {
-	cout << "making rotation to align image" << endl;
+	//cout << "making rotation to align image" << endl;
 	// GRAY_THRESH and HOUGH_VOTE
 	int GRAY_THRESH = 150;
 	int HOUGH_VOTE = 100;
@@ -97,7 +99,7 @@ void TableImage::makeAlignment() {
 	double HALF_PI = (double)CV_PI / 90.0;
 	for (int i = 0; i < lines.size(); i++) {
 		double theta = lines[i][1];
-		cout << "theta: " << theta * 180.0 / CV_PI << endl;
+		// //cout << "theta: " << theta * 180.0 / CV_PI << endl;
 		// only when theta in (0,45) or (135, 180) will apply
 		if ((theta > 0 && theta < angleThresh) || (theta < CV_PI && theta > CV_PI - angleThresh)) {
 			angle = theta;
@@ -112,7 +114,7 @@ void TableImage::makeAlignment() {
 	
 	double angleD = angle * 180.0 / (double)CV_PI;
 	alignDegree = angleD;
-	cout << "Alignment Degree:" << alignDegree << endl;
+	//cout << "Alignment Degree:" << alignDegree << endl;
 	if (abs(angleD) > 0.6) {
 		Point center = Point(proImg.cols / 2, proImg.rows / 2);
 		Mat rotMat = getRotationMatrix2D(center, angleD, 1.0);
@@ -125,6 +127,7 @@ void TableImage::makeAlignment() {
 		int subRectWidth = subRectHeight * proImg.cols / proImg.rows;
 
 		Rect rect = Rect(center.x - subRectWidth / 2, center.y - subRectHeight / 2, subRectWidth, subRectHeight);
+		center = Point(rect.x + rect.width / 2, rect.y + rect.height / 2);
 		proImg = Mat(dstImg, rect);
 		// show("rotation", proImg, 4);
 
@@ -133,11 +136,11 @@ void TableImage::makeAlignment() {
 		cutImg = Mat(dstImg, rect);
 		// show("rotation_ori", cutImg);
 	}
-	cout << "alignment complete" << endl;
+	//cout << "alignment complete" << endl;
 }
 
 void TableImage::selectLargestBox() {
-	cout << "largest box calibration" << endl;
+	//cout << "largest box calibration" << endl;
 	int OUT_BORDER = (oriImg.cols > oriImg.rows) ? oriImg.cols / 200 : oriImg.rows / 200;
 	Mat temp = proImg.clone();
 	Mat kernelD = getStructuringElement(MORPH_DILATE, Size(2, 2));
@@ -160,6 +163,7 @@ void TableImage::selectLargestBox() {
 	Rect largeRect = boundingRect(largestContour);
 	Rect finalRect = Rect(largeRect.x - OUT_BORDER, largeRect.y - OUT_BORDER,
 		largeRect.width + 2 * OUT_BORDER, largeRect.height + 2 * OUT_BORDER);
+	center = Point(finalRect.x + finalRect.width / 2, finalRect.y + finalRect.height / 2);
 
 	vector<vector<Point>> oneLargeContour;
 	oneLargeContour.push_back(largestContour);
@@ -171,11 +175,11 @@ void TableImage::selectLargestBox() {
 	dilate(temp, temp, kernelD);
 	goodFeaturesToTrack(temp, corners, 4, 0.05, 30, noArray(), 9);
 
-	cout << corners.size() << endl;
-	for (int i = 0; i < corners.size(); i++) {
-		cout << corners[i] << endl;
-		circle(temp, corners[i], 4, Scalar(255, 255, 255), 2);
-	}
+	////cout << corners.size() << endl;
+	//for (int i = 0; i < corners.size(); i++) {
+	//	//cout << corners[i] << endl;
+	//	circle(temp, corners[i], 4, Scalar(255, 255, 255), 2);
+	//}
 	// show("select", temp, 2);
 	//Mat resized;
 	//resize(temp, resized, Size(temp.cols / 4, temp.rows / 4));
@@ -183,32 +187,39 @@ void TableImage::selectLargestBox() {
 	//waitKey(0);
 
 	if (isTapezoid(corners)) {
-		cout << "is Tapezoid!" << endl;
+		//cout << "is Tapezoid!" << endl;
 		vector<Point2f> rectCorners;
 		rectCorners.push_back(Point2f(largeRect.x, largeRect.y));
 		rectCorners.push_back(Point2f(largeRect.x + largeRect.width, largeRect.y));
 		rectCorners.push_back(Point2f(largeRect.x, largeRect.y + largeRect.height));
 		rectCorners.push_back(Point2f(largeRect.x + largeRect.width, largeRect.y + largeRect.height));
-		for (int i = 0; i < corners.size(); i++) {
-			cout << corners[i] << endl;
-		}
+		//for (int i = 0; i < corners.size(); i++) {
+		//	//cout << corners[i] << endl;
+		//}
 		Mat perspTrans = getPerspectiveTransform(corners, rectCorners);
 		Mat dst;
 		warpPerspective(proImg, proImg, perspTrans, Size(proImg.cols, proImg.rows), INTER_LINEAR, BORDER_CONSTANT, Scalar(0, 0, 0));
-		warpPerspective(cutImg, cutImg, perspTrans, Size(cutImg.cols, cutImg.rows), INTER_LINEAR, BORDER_CONSTANT, Scalar(0, 0, 0));
+		warpPerspective(cutImg, cutImg, perspTrans, Size(cutImg.cols, cutImg.rows), INTER_LINEAR, BORDER_CONSTANT, Scalar(255, 255, 255));
 		// show("perspective", proImg);
-		cout << perspTrans << endl;
+		////cout << perspTrans << endl;
 	}
+
+	Mat outImg = cutImg.clone();
+	Mat onetemp = Mat(Size(cutImg.cols, cutImg.rows), oriImg.channels(), Scalar(255,255,255));
+	onetemp(largeRect).copyTo(outImg(largeRect));
+	show("outImg", outImg, 4);
+	waitKey(0);
+
 	proImg = Mat(proImg, finalRect);
 	cutImg = Mat(cutImg, finalRect);
 	//show("after subMat", proImg,4);
 	//show("first cut", cutImg,4);
 	//waitKey(0);
-	cout << "largest box pinpointed" << endl;
+	//cout << "largest box pinpointed" << endl;
 }
 
 void TableImage::distinguishStructures() {
-	cout << "distinguishing linear structures" << endl;
+	//cout << "distinguishing linear structures" << endl;
 	Mat horizontialLines = proImg.clone();
 	//LINE_BASE
 	int LINE_BASE = 30;
@@ -275,25 +286,26 @@ void TableImage::distinguishStructures() {
 	//lineVer = mergeLines(lineVer, 1);
 
 	Mat lineResult = Mat(Size(proImg.cols, proImg.rows), CV_8UC1);
-	cout << lineHor.size() << endl;
+	////cout << lineHor.size() << endl;
 	for (size_t i = 0; i < lineHor.size(); i++) {
-		cout << lineHor[i][0] << " " << lineHor[i][1] << " " << lineHor[i][2] << endl;
+		////cout << lineHor[i][0] << " " << lineHor[i][1] << " " << lineHor[i][2] << endl;
 		line(lineResult, Point(lineHor[i][0], lineHor[i][1]), Point(lineHor[i][0] + lineHor[i][2], lineHor[i][1]), Scalar(255, 255, 255), 3);
 	}
-	cout << lineVer.size() << endl;
+	////cout << lineVer.size() << endl;
 	for (size_t i = 0; i < lineVer.size(); i++) {
-		cout << lineVer[i][0] << " " << lineVer[i][1] << " " << lineVer[i][2] << endl;
+		////cout << lineVer[i][0] << " " << lineVer[i][1] << " " << lineVer[i][2] << endl;
 		line(lineResult, Point(lineVer[i][0], lineVer[i][1]), Point(lineVer[i][0] , lineVer[i][1] + lineVer[i][2]), Scalar(255, 255, 255), 3);
 	}
 	// show("lineResult", lineResult, 4);
 	// waitKey(0);
-	cout << "structure finding complete" << endl;
+	//cout << "structure finding complete" << endl;
 }
 
 void TableImage::cutImage() {
-	cout << "cutting image" << endl;
-	String dir = "../" + to_string(id) + "/";
-	cout << "writing pieces into " << dir << endl;
+	cout << "generating process result ... " << endl;
+	_mkdir("../output");
+	String dir = "../output/" + to_string(id) + "/";
+	//cout << "writing pieces into " << dir << endl;
 	_mkdir(dir.c_str());
 	int count = 0;
 	for (int i = 0; i < lineHor.size() - 1; i++) {
@@ -326,8 +338,8 @@ void TableImage::cutImage() {
 			}
 		}
 	}
-	cout << "count" << count << endl;
-	cout << "cutting image complete" << endl;
+	//cout << "count" << count << endl;
+	//cout << "cutting image complete" << endl;
 }
 
 bool minHor(Vec3i a, Vec3i b) {
@@ -438,7 +450,7 @@ bool TableImage::isTapezoid(vector<Point2f>& points) {
 	else theta2 = atan(abs(points[2].y - points[3].y) / abs(points[2].x - points[3].x));
 	if (abs(theta1 - theta2) < 10.0 * CV_PI / 180.0) {
 		flag = true;
-		cout << "0,1: " << theta1 << " " << theta2 << endl;
+		////cout << "0,1: " << theta1 << " " << theta2 << endl;
 	}
 	// 0&2, 1&3
 	if (points[0].x == points[2].x) theta1 = CV_PI / 2.0;
@@ -447,7 +459,7 @@ bool TableImage::isTapezoid(vector<Point2f>& points) {
 	else theta2 = atan(abs(points[1].y - points[3].y) / abs(points[1].x - points[3].x));
 	if (abs(theta1 - theta2) < 10.0 * CV_PI / 180.0) {
 		flag = true;
-		cout << "0,2: " << theta1 << " " << theta2 << endl;
+		////cout << "0,2: " << theta1 << " " << theta2 << endl;
 	}
 	// 0&3, 1&2
 	if (points[0].x == points[3].x) theta1 = CV_PI / 2.0;
@@ -456,7 +468,7 @@ bool TableImage::isTapezoid(vector<Point2f>& points) {
 	else theta2 = atan(abs(points[2].y - points[1].y) / abs(points[2].x - points[1].x));
 	if (abs(theta1 - theta2) < 10.0 * CV_PI / 180.0) {
 		flag = true;
-		cout << "0,3: " << theta1 << " " << theta2 << endl;
+		////cout << "0,3: " << theta1 << " " << theta2 << endl;
 	}
 
 	if (!flag) {
