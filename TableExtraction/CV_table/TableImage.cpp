@@ -213,6 +213,9 @@ void TableImage::selectLargestBox() {
 
 	proImg = Mat(proImg, finalRect);
 	cutImg = Mat(cutImg, finalRect);
+
+	info.setTableHeight(finalRect.height);
+	info.setTableWidth(finalRect.width);
 	//show("after subMat", proImg,4);
 	//show("first cut", cutImg,4);
 	//waitKey(0);
