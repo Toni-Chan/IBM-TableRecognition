@@ -204,11 +204,12 @@ void TableImage::selectLargestBox() {
 		////cout << perspTrans << endl;
 	}
 
-	Mat outImg = cutImg.clone();
+	Mat titleImg = cutImg.clone();
 	Mat onetemp = Mat(Size(cutImg.cols, cutImg.rows), oriImg.channels(), Scalar(255,255,255));
-	onetemp(largeRect).copyTo(outImg(largeRect));
-	show("outImg", outImg, 4);
-	waitKey(0);
+	onetemp(largeRect).copyTo(titleImg(largeRect));
+	//show("titleImg", titleImg, 4);
+	//waitKey(0);
+	info.writeImagePart("title", titleImg);
 
 	proImg = Mat(proImg, finalRect);
 	cutImg = Mat(cutImg, finalRect);
@@ -303,10 +304,10 @@ void TableImage::distinguishStructures() {
 
 void TableImage::cutImage() {
 	cout << "generating process result ... " << endl;
-	_mkdir("../output");
-	String dir = "../output/" + to_string(id) + "/";
+	//_mkdir("../output");
+	//String dir = "../output/" + to_string(id) + "/";
 	//cout << "writing pieces into " << dir << endl;
-	_mkdir(dir.c_str());
+	//_mkdir(dir.c_str());
 	int count = 0;
 	for (int i = 0; i < lineHor.size() - 1; i++) {
 		for (int j = i + 1; j < lineHor.size(); j++) {
@@ -331,8 +332,8 @@ void TableImage::cutImage() {
 						if (!flag) continue;
 						count++;
 						Mat temp = Mat(cutImg, tmp);
-
-						imwrite(dir + to_string(count) + ".jpg", temp);
+						info.insertRect(tmp);
+						info.writeImagePart(to_string(count), temp);
 					}
 				}
 			}
@@ -340,6 +341,7 @@ void TableImage::cutImage() {
 	}
 	//cout << "count" << count << endl;
 	//cout << "cutting image complete" << endl;
+	info.writeToFile();
 }
 
 bool minHor(Vec3i a, Vec3i b) {

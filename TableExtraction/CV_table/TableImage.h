@@ -1,10 +1,5 @@
 #pragma once
-#include <opencv2\core\core.hpp>
-#include <opencv2\highgui\highgui.hpp>
-#include <opencv2\imgproc\imgproc.hpp>
-#include <iostream>
-#include <algorithm>
-#include <direct.h>
+#include "commons.h"
 #include "TableImageInfo.h"
 
 using namespace std;
@@ -19,25 +14,22 @@ class TableImage {
 	int id;		
 	// input path
 	String filename;
-	String directory;
+	// struct to store image info
+	TableImageInfo info;
+	// make the center of processed image in processing
+	Point center;
 	// original image, only used for backup
 	Mat oriImg;			
 	// processed image, is changed in size and channels while processing
 	Mat proImg;			
 	// a Daemon image of proImg, is changed simultaneously as proImg, used for final cutting pieces
 	Mat cutImg;			
-	// flag indicates the validity of object
-	bool useable = true;	
 	// flag indicates whether the imshow window is opened
 	bool showing = false;	
 	// struct to store horizontial and vertical lines
 	vector<Vec3i> lineHor, lineVer;	
 	// if the image need to be affined(spinned), record its value
 	double alignDegree;	
-	// struct to store image info
-	TableImageInfo info;
-	// make the center of processed image in processing
-	Point center;
 
 	// Initializer of info
 	void initInfo();
@@ -76,14 +68,10 @@ class TableImage {
 	bool isTapezoid(vector<Point2f>&);
 
 public:
-	// Image is cutted into pieces by rectanles
-	vector<Rect> cuttingRects;
 	TableImage(int id, String name) :id(id), filename(name), info(name) {
-		readImage();
+		info.readImage(name, oriImg);
 		initInfo();
 	}
-	// Input image through path, will print error message while encounter failure
-	void readImage();
 	// Workflow of table processing
 	void startProcess();
 	// backup original image
@@ -101,16 +89,8 @@ public:
 
 };
 
-inline void TableImage::readImage() {
-	oriImg = imread(filename, CV_LOAD_IMAGE_GRAYSCALE);
-	if (oriImg.empty()) {
-		cerr << "ERROR::IMAGE::READ" << endl;
-		useable = false;
-	}
-}
-
 inline bool TableImage::isValid() {
-	return useable;
+	return !oriImg.empty();
 }
 
 inline void TableImage::show(String name, Mat& pic, int scale = 1) {

@@ -1,14 +1,19 @@
-﻿  TableImage.cpp
-d:\program files\projects\gitrepo\ibm\tableextraction\cv_table\tableimageinfo.h(22): warning C4267: “return”: 从“size_t”转换到“int”，可能丢失数据
+﻿  main.cpp
+d:\program files\projects\gitrepo\ibm\tableextraction\cv_table\tableimageinfo.h(30): warning C4267: “return”: 从“size_t”转换到“int”，可能丢失数据
+  TableImage.cpp
+d:\program files\projects\gitrepo\ibm\tableextraction\cv_table\tableimageinfo.h(30): warning C4267: “return”: 从“size_t”转换到“int”，可能丢失数据
 d:\program files\projects\gitrepo\ibm\tableextraction\cv_table\tableimage.cpp(126): warning C4244: “初始化”: 从“double”转换到“int”，可能丢失数据
 d:\program files\projects\gitrepo\ibm\tableextraction\cv_table\tableimage.cpp(157): warning C4267: “=”: 从“size_t”转换到“int”，可能丢失数据
 d:\program files\projects\gitrepo\ibm\tableextraction\cv_table\tableimage.cpp(192): warning C4244: “参数”: 从“int”转换到“float”，可能丢失数据
 d:\program files\projects\gitrepo\ibm\tableextraction\cv_table\tableimage.cpp(193): warning C4244: “参数”: 从“int”转换到“float”，可能丢失数据
 d:\program files\projects\gitrepo\ibm\tableextraction\cv_table\tableimage.cpp(194): warning C4244: “参数”: 从“int”转换到“float”，可能丢失数据
 d:\program files\projects\gitrepo\ibm\tableextraction\cv_table\tableimage.cpp(195): warning C4244: “参数”: 从“int”转换到“float”，可能丢失数据
-d:\program files\projects\gitrepo\ibm\tableextraction\cv_table\tableimage.cpp(481): warning C4244: “=”: 从“float”转换到“int”，可能丢失数据
 d:\program files\projects\gitrepo\ibm\tableextraction\cv_table\tableimage.cpp(485): warning C4244: “=”: 从“float”转换到“int”，可能丢失数据
-d:\program files\projects\gitrepo\ibm\tableextraction\cv_table\tableimage.cpp(494): warning C4244: “=”: 从“float”转换到“int”，可能丢失数据
+d:\program files\projects\gitrepo\ibm\tableextraction\cv_table\tableimage.cpp(489): warning C4244: “=”: 从“float”转换到“int”，可能丢失数据
 d:\program files\projects\gitrepo\ibm\tableextraction\cv_table\tableimage.cpp(498): warning C4244: “=”: 从“float”转换到“int”，可能丢失数据
+d:\program files\projects\gitrepo\ibm\tableextraction\cv_table\tableimage.cpp(502): warning C4244: “=”: 从“float”转换到“int”，可能丢失数据
+  正在生成代码...
+  正在跳过...(未检测到相关更改)
+  TableImageInfo.cpp
   CV_table.vcxproj -> D:\Program Files\Projects\GitRepo\IBM\TableExtraction\x64\Debug\CV_table.exe
   CV_table.vcxproj -> D:\Program Files\Projects\GitRepo\IBM\TableExtraction\x64\Debug\CV_table.pdb (Full PDB)

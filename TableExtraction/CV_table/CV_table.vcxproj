@@ -156,6 +156,7 @@
     <ClCompile Include="TableImageInfo.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="commons.h" />
     <ClInclude Include="TableImage.h" />
     <ClInclude Include="TableImageInfo.h" />
   </ItemGroup>

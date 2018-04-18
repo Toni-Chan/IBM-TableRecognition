@@ -1,18 +1,19 @@
 #include "TableImageInfo.h"
 
+string TableImageInfo::rootPath = "";
 //only admit to read when file already exists.
 void TableImageInfo::readFromFile() {
-	ifstream in(fileName + ".txt");
+	ifstream in(pathName + ".txt");
 	if (!in) {
-		cerr << "File " << fileName << " not exists!" << endl;
+		cerr << "File " << pathName << " not exists!" << endl;
 		return;
 	}
 	else {
 		string filename;
 		in >> filename;
-		if (filename != fileName) {
+		if (filename != pathName) {
 			cout << "Warning: file name not matched" << endl;
-			cout << "openpath: " << fileName << " filecontent: " << filename << endl;
+			cout << "openpath: " << pathName << " filecontent: " << filename << endl;
 		}
 		int width, height;
 		in >> width >> height;
@@ -34,13 +35,13 @@ void TableImageInfo::readFromFile() {
 }
 
 void TableImageInfo::writeToFile() {
-	ofstream out(fileName + ".txt");
-	out << fileName << endl;
+	ofstream out(pathName + ".txt");
+	out << pathName << endl;
 	out << imageWidth << " " << imageHeight << endl;
 	out << tableWidth << " " << tableHeight << endl;
 	out << rects.size() << endl;
 	for (int i = 0; i < rects.size(); i++) {
-		cout << rects[i].x << " " << rects[i].y << " "
+		out << rects[i].x << " " << rects[i].y << " "
 			<< rects[i].width << " " << rects[i].height << endl;
 	}
 	out.close();
