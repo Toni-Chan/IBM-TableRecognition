@@ -2,6 +2,6 @@
 #include <stdlib.h>
 
 int main() {
-	system("CV_table.exe");
+	system("TableExtraction.exe");
 	printf("Image processing part completed\n");
 }

@@ -4,13 +4,19 @@
 using namespace std;
 using namespace cv;
 
+struct NotedRect {
+	int index;
+	Rect rect;
+};
+typedef struct NotedRect NotedRect;
+
 //name used to be TableImageParts
 //class to temporarily-store, output and readin an image's information
 class TableImageInfo {
 	string pathName;
 	int imageWidth, imageHeight;
 	int tableWidth, tableHeight;
-	vector<Rect> rects;
+	vector<NotedRect> rects;
 public:
 	static string rootPath;
 	static void setRootPath(string name) { rootPath = name; _mkdir(rootPath.c_str()); }
@@ -19,7 +25,7 @@ public:
 		size_t posDot = filename.find_last_of("."); 
 		size_t posSlide = filename.find_last_of("/");
 		pathName = rootPath + filename.substr(posSlide, posDot - posSlide) + "_" + filename.substr(posDot + 1);
-		cout << pathName << endl;
+		//cout << pathName << endl;
 		_mkdir(pathName.c_str());
 	}
 
@@ -33,13 +39,13 @@ public:
 			cerr << "ERROR::TABLEIMAGEINFO::INDEX_OUT_OF_BOUND" << endl;
 			return Rect();
 		}
-		else return rects[index];
+		else return rects[index].rect;
 	}
 	void setImageWidth(int width) { this->imageWidth = width; }
 	void setImageHeight(int height) { this->imageHeight = height; }
 	void setTableWidth(int width) { this->tableWidth = width; }
 	void setTableHeight(int height) { this->tableHeight = height; }
-	void insertRect(Rect temp) { rects.push_back(temp); }
+	void insertRect(int index, Rect temp) { NotedRect nr; nr.index = index; nr.rect = temp; rects.push_back(nr); }
 
 	bool readImage(string path, Mat& img);
 	bool writeImagePart(string name, Mat&);

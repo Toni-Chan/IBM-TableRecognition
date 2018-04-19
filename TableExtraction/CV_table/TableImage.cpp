@@ -333,10 +333,10 @@ void TableImage::cutImage() {
 								break;
 							}
 						if (!flag) continue;
-						count++;
 						Mat temp = Mat(cutImg, tmp);
-						info.insertRect(tmp);
+						info.insertRect(count, tmp);
 						info.writeImagePart(to_string(count), temp);
+						count++;
 					}
 				}
 			}

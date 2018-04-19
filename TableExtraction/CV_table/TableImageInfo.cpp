@@ -25,11 +25,16 @@ void TableImageInfo::readFromFile() {
 
 		rects.clear();
 		int num;
+		int index;
 		int x, y;
 		in >> num;
 		for (int i = 0; i < num; i++) {
-			cin >> x >> y >> width >> height;
-			rects.push_back(Rect(x, y, width, height));
+			in >> index;
+			in >> x >> y >> width >> height;
+			NotedRect nr;
+			nr.index = index;
+			nr.rect = Rect(x, y, width, height);
+			rects.push_back(nr);
 		}
 	}
 }
@@ -41,8 +46,9 @@ void TableImageInfo::writeToFile() {
 	out << tableWidth << " " << tableHeight << endl;
 	out << rects.size() << endl;
 	for (int i = 0; i < rects.size(); i++) {
-		out << rects[i].x << " " << rects[i].y << " "
-			<< rects[i].width << " " << rects[i].height << endl;
+		out << rects[i].index << " ";
+		out << rects[i].rect.x << " " << rects[i].rect.y << " "
+			<< rects[i].rect.width << " " << rects[i].rect.height << endl;
 	}
 	out.close();
 }
