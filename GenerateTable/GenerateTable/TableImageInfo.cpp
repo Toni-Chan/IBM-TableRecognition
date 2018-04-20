@@ -85,23 +85,18 @@ void TableImageInfo::generateTable() {
 	int excCols = getExcelCols(smallWidth);
 	int excRows = getExcelRows(smallHeight);
 
-	initExcelMat(excCols, excRows);
+	initExcelTempMat(excCols, excRows);
 
 	for (int i = 0; i < rects.size(); i++) {
 		Point pos = getPartPosition(rects[i].rect, smallWidth, smallHeight);
 		//string text = content[rects[i].index];
 		string text = to_string(rects[i].index);
-		insertExcelMat(pos, text);
+		insertExcelTempMat(pos, text);
 	}
 
-	ofstream out(pathName + ".csv");
-	out << pathName << "," << endl;
-	for (int i = 0; i < excRows; i++) {
-		for (int j = 0; j < excCols; j++) {
-			out << getExcelContent(j, i) << ",";
-		}
-		out << endl;
-	}
+	clearUselessTiles();
+
+	writeMatToExcelFile();
 }
 
 int TableImageInfo::getStandardHeight() {
@@ -124,11 +119,88 @@ int TableImageInfo::getStandardWidth() {
 	return minWidth;
 }
 
-void TableImageInfo::initExcelMat(int cols, int rows) {
+void TableImageInfo::initExcelTempMat(int cols, int rows) {
+	excelTempMat.clear();
 	for (int i = 0; i < rows; i++) {
 		vector<string> temp;
+		temp.clear();
 		for (int j = 0; j < cols; j++)
 			temp.push_back("");
-		excelMat.push_back(temp);
+		excelTempMat.push_back(temp);
+	}
+}
+
+void TableImageInfo::clearUselessTiles() {
+	excelMat.clear();
+	vector<int> blankCols, blankRows;
+	int rows = excelTempMat.size();
+	int cols = excelTempMat[0].size();
+	for (int i = 0; i < rows; i++) {
+		if (isBlank(i, 0)) blankRows.push_back(i);
+	}
+	for (int i = 0; i < cols; i++) {
+		if (isBlank(i, 1)) blankCols.push_back(i);
+	}
+	for (int i = 0; i < rows; i++) {
+		if (isFound(blankRows, i)) continue;
+		else {
+			vector<string> temp;
+			for (int j = 0; j < cols; j++) {
+				if (isFound(blankCols, j)) continue;
+				else
+					temp.push_back(getExcelTempContent(j, i));
+			}
+			excelMat.push_back(temp);
+		}
+	}
+}
+
+bool TableImageInfo::isBlank(int line, int mode) {
+	if (mode == 0) {
+		int cols = excelTempMat[0].size();
+		bool flag = true;
+		for (int i = 0; i < cols; i++) {
+			if (excelTempMat[line][i] != "") {
+				flag = false;
+				break;
+			}
+		}
+		return flag;
+	}
+	else {
+		int rows = excelTempMat.size();
+		bool flag = true;
+		for (int i = 0; i < rows; i++) {
+			if (excelTempMat[i][line] != "") {
+				flag = false;
+				break;
+			}
+		}
+		return flag;
+	}
+}
+
+bool TableImageInfo::isFound(vector<int>& container, int coord) {
+	int size = container.size();
+	int flag = false;
+	for (int i = 0; i < size; i++) {
+		if (container[i] == coord) {
+			flag = true;
+			break;
+		}
+	}
+	return flag;
+}
+
+void TableImageInfo::writeMatToExcelFile() {
+	ofstream out(pathName + ".csv");
+	out << pathName << "," << endl;
+	int rows = excelMat.size();
+	int cols = excelMat[0].size();
+	for (int i = 0; i < rows; i++) {
+		for (int j = 0; j < cols; j++) {
+			out << getExcelContent(j, i) << ",";
+		}
+		out << endl;
 	}
 }

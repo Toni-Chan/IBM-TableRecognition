@@ -21,7 +21,7 @@ class TableImageInfo {
 	// container to store rectangles' information
 	vector<NotedRect> rects;
 	// temporary container to store contents of excel file
-	vector<vector<string>> excelMat;
+	vector<vector<string>> excelMat, excelTempMat;
 	// ocr results.
 	vector<string> content; /// waiting for OCR part, also need input method implementation
 
@@ -31,18 +31,30 @@ class TableImageInfo {
 	// get generating mat's rows and columns to initialize temporary mat
 	int getExcelCols(int unitWidth) { return tableWidth / unitWidth; }
 	int getExcelRows(int unitHeight) { return tableHeight / unitHeight; }
-	// initializer of excelMat
-	void initExcelMat(int cols, int rows);
+	// initializer of excelTempMat
+	void initExcelTempMat(int cols, int rows);
 	// fundamental calculation of rectangle's position
 	Point getPartPosition(Rect rect, int smallWidth, int smallHeight) { 
 		int row = rect.y / smallHeight; int col = rect.x / smallWidth; return Point(col, row);
 	}
-	// function to modify content of excelMat [replaceable!]
-	void insertExcelMat(Point pos, string text) { excelMat[pos.y][pos.x] = text; }
-	// function to get context of excelMat, using for file stream output
+	// function to modify content of excelTempMat [replaceable!]
+	void insertExcelTempMat(Point pos, string text) { excelTempMat[pos.y][pos.x] = text; }
+	// function to get content of excelTempMat
+	string getExcelTempContent(int col, int row) { return excelTempMat[row][col]; }
+	// function to get content of excelMat, using for file stream output
 	string getExcelContent(int col, int row) { return excelMat[row][col]; }
 	// sorting rectangles, preorder: y>>x>>width>>height
 	void sortRects();
+	// clear useless tiles (empty rows and columns) in Mat
+	void clearUselessTiles();
+	// inner function to check whether a row/col of excelTempMat is all blank
+	// 0: row mode
+	// 1: column mode
+	bool isBlank(int, int mode);
+	// inner function to check whether a coord is in blankRow/blankCol container
+	bool isFound(vector<int>&, int);
+	// write Mat to excel output
+	void writeMatToExcelFile();
 public:
 	// root path of this class, default should be "./output", 
 	// path name is append after this
