@@ -2,9 +2,6 @@
 #include "commons.h"
 #include "TableImageInfo.h"
 
-using namespace std;
-using namespace cv;
-
 bool minHor(Vec3i, Vec3i);	// Compare function in sorting for horizontial lines
 bool minVer(Vec3i, Vec3i);	// Compare function in sorting for vertical lines
 
@@ -65,7 +62,7 @@ class TableImage {
 	*	corner is a container of Point of size 4
 	*	if the points are corners of tapezoid, the function will reorder the points to match rectangle
 	*/
-	bool isTapezoid(vector<Point2f>&);
+	bool isTapezoid(vector<Point2f>&, Rect);
 
 public:
 	TableImage(int id, String name) :id(id), filename(name), info(name) {
@@ -98,13 +95,17 @@ inline void TableImage::show(String name, Mat& pic, int scale = 1) {
 		namedWindow(filename, WINDOW_AUTOSIZE);
 		showing = true;
 	}
-	if (scale != 1) {
-		Mat resized;
-		resize(pic, resized, Size(pic.cols / scale, pic.rows / scale));
-		imshow(name, resized);
-	}
-	else
-		imshow(name, pic);
+	//if (scale != 1) {
+	//	Mat resized;
+	//	resize(pic, resized, Size(pic.cols / scale, pic.rows / scale));
+	//	imshow(name, resized);
+	//}
+	//else
+	//	imshow(name, pic);
+	Mat resized;
+	resize(pic, resized, Size(600, 600 * pic.rows / pic.cols));
+	imshow(name, resized);
+
 }
 
 inline void TableImage::initInfo() {

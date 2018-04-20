@@ -21,6 +21,9 @@ void TableImage::cloneOriImage() {
 	cutImg = oriImg.clone();
 	proImg = ~oriImg.clone();
 	center = Point(oriImg.cols / 2, oriImg.rows / 2);
+#ifdef _DEBUG
+	show("oriGray", oriImg, 2);
+#endif
 	//cout << "clone complete" << endl;
 }
 
@@ -37,7 +40,6 @@ void TableImage::eliminateNoise() {
 	dilate(proImg, proImg, kernelD);
 	erode(proImg, proImg, kernelE);
 
-	// show("oriGray", proImg);
 	//cout << "eliminate complete" << endl;
 }
 
@@ -89,7 +91,9 @@ void TableImage::makeAlignment() {
 	magMat.convertTo(magImg, CV_8UC1, 255, 0);
 
 	threshold(magImg, magImg, GRAY_THRESH, 255, CV_THRESH_BINARY);
-	// show("magImg", magImg, 4);
+#ifdef _DEBUG
+	 show("magImg", magImg, 2);
+#endif
 
 	vector<Vec2f> lines;
 	HoughLines(magImg, lines, 1, (double)CV_PI / 180, HOUGH_VOTE, 0, 0);
@@ -114,7 +118,10 @@ void TableImage::makeAlignment() {
 	
 	double angleD = angle * 180.0 / (double)CV_PI;
 	alignDegree = angleD;
-	//cout << "Alignment Degree:" << alignDegree << endl;
+#ifdef _DEBUG
+	cout << "Alignment Degree:" << alignDegree << endl;
+#endif
+
 	if (abs(angleD) > 0.6) {
 		Point center = Point(proImg.cols / 2, proImg.rows / 2);
 		Mat rotMat = getRotationMatrix2D(center, angleD, 1.0);
@@ -129,7 +136,9 @@ void TableImage::makeAlignment() {
 		Rect rect = Rect(center.x - subRectWidth / 2, center.y - subRectHeight / 2, subRectWidth, subRectHeight);
 		center = Point(rect.x + rect.width / 2, rect.y + rect.height / 2);
 		proImg = Mat(dstImg, rect);
-		// show("rotation", proImg, 4);
+#ifdef _DEBUG
+		 show("rotation", proImg, 2);
+#endif
 
 		dstImg = Mat::ones(cutImg.size(), CV_8UC3);
 		warpAffine(cutImg, dstImg, rotMat, cutImg.size(), 1, 0, Scalar(255, 255, 255));
@@ -181,12 +190,9 @@ void TableImage::selectLargestBox() {
 	//	circle(temp, corners[i], 4, Scalar(255, 255, 255), 2);
 	//}
 	// show("select", temp, 2);
-	//Mat resized;
-	//resize(temp, resized, Size(temp.cols / 4, temp.rows / 4));
-	//show("select", resized);
 	//waitKey(0);
 
-	if (isTapezoid(corners)) {
+	if (isTapezoid(corners, largeRect)) {
 		//cout << "is Tapezoid!" << endl;
 		vector<Point2f> rectCorners;
 		rectCorners.push_back(Point2f(largeRect.x, largeRect.y));
@@ -200,7 +206,9 @@ void TableImage::selectLargestBox() {
 		Mat dst;
 		warpPerspective(proImg, proImg, perspTrans, Size(proImg.cols, proImg.rows), INTER_LINEAR, BORDER_CONSTANT, Scalar(0, 0, 0));
 		warpPerspective(cutImg, cutImg, perspTrans, Size(cutImg.cols, cutImg.rows), INTER_LINEAR, BORDER_CONSTANT, Scalar(255, 255, 255));
-		// show("perspective", proImg);
+#ifdef _DEBUG
+		 show("perspective", proImg, 2);
+#endif
 		////cout << perspTrans << endl;
 	}
 
@@ -216,7 +224,9 @@ void TableImage::selectLargestBox() {
 
 	info.setTableHeight(finalRect.height);
 	info.setTableWidth(finalRect.width);
-	//show("after subMat", proImg,4);
+#ifdef _DEBUG
+	show("after subMat", proImg, 2);
+#endif
 	//show("first cut", cutImg,4);
 	//waitKey(0);
 	//cout << "largest box pinpointed" << endl;
@@ -231,7 +241,9 @@ void TableImage::distinguishStructures() {
 	Mat horizontialLineKernel = getStructuringElement(MORPH_RECT, Size(horizontialRectSize, 1));
 	erode(horizontialLines, horizontialLines, horizontialLineKernel);
 	dilate(horizontialLines, horizontialLines, horizontialLineKernel);
-	// show("horizontiallines", horizontialLines);
+#ifdef _DEBUG
+	 show("horizontiallines", horizontialLines, 2);
+#endif
 
 	vector<vector<Point>> horContours;
 	findContours(horizontialLines, horContours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE, Point(0, 0));
@@ -248,7 +260,9 @@ void TableImage::distinguishStructures() {
 	Mat verticalLineKernel = getStructuringElement(MORPH_RECT, Size(1, verticalRectSize));
 	erode(verticalLines, verticalLines, verticalLineKernel);
 	dilate(verticalLines, verticalLines, verticalLineKernel);
-	// show("vertical lines", verticalLines);
+#ifdef _DEBUG
+	 show("vertical lines", verticalLines, 2);
+#endif
 
 	vector<vector<Point>> verContours;
 	findContours(verticalLines, verContours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE, Point(0, 0));
@@ -300,8 +314,10 @@ void TableImage::distinguishStructures() {
 		////cout << lineVer[i][0] << " " << lineVer[i][1] << " " << lineVer[i][2] << endl;
 		line(lineResult, Point(lineVer[i][0], lineVer[i][1]), Point(lineVer[i][0] , lineVer[i][1] + lineVer[i][2]), Scalar(255, 255, 255), 3);
 	}
-	// show("lineResult", lineResult, 4);
-	// waitKey(0);
+#ifdef _DEBUG
+	 show("lineResult", lineResult, 2);
+	 waitKey(0);
+#endif
 	//cout << "structure finding complete" << endl;
 }
 
@@ -444,7 +460,7 @@ bool TableImage::isRect(Vec3i h1, Vec3i h2, Vec3i v1, Vec3i v2) {
 
 }
 
-bool TableImage::isTapezoid(vector<Point2f>& points) {
+bool TableImage::isTapezoid(vector<Point2f>& points, Rect rect) {
 	if (points.size() != 4) return false;
 	bool flag = false;
 	// 0&1, 2&3
@@ -513,6 +529,17 @@ bool TableImage::isTapezoid(vector<Point2f>& points) {
 		points.push_back(temp[upright]);
 		points.push_back(temp[downleft]);
 		points.push_back(temp[max]);
-		return true;
+		float area1 = 0.5f * abs(points[0].x * points[1].y +
+			points[1].x* points[2].y + points[2].x*points[0].y -
+			points[0].x * points[2].y - points[1].x * points[0].y - 
+			points[2].x * points[1].y);
+		float area2 = 0.5f * abs(points[3].x * points[1].y +
+			points[1].x* points[2].y + points[2].x*points[3].y -
+			points[3].x * points[2].y - points[1].x * points[3].y -
+			points[2].x * points[1].y);
+		if (area1 + area2 < rect.width*rect.height * 0.75f)
+			return false;
+		else
+			return true;
 	}
 }

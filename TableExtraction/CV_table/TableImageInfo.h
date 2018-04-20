@@ -1,9 +1,9 @@
 #pragma once
 #include "commons.h"
 
-using namespace std;
-using namespace cv;
-
+// struct to save rectangle information and corresponding index
+// index is used for mapping to content
+// vector<NotedRect> rect : rect[i].index -> content[index]
 struct NotedRect {
 	int index;
 	Rect rect;
@@ -13,14 +13,43 @@ typedef struct NotedRect NotedRect;
 //name used to be TableImageParts
 //class to temporarily-store, output and readin an image's information
 class TableImageInfo {
+	// a pathName parsed from image name, changing dot'.' to slide'_'.
 	string pathName;
+	// basic information of an image and before and after processed.
 	int imageWidth, imageHeight;
 	int tableWidth, tableHeight;
+	// container to store rectangles' information
 	vector<NotedRect> rects;
+	// temporary container to store contents of excel file
+	vector<vector<string>> excelMat;
+	// ocr results.
+	vector<string> content; /// waiting for OCR part, also need input method implementation
+
+	// get the smallest piece of a cutted mat, using as primial of excel
+	int getStandardWidth();
+	int getStandardHeight();
+	// get generating mat's rows and columns to initialize temporary mat
+	int getExcelCols(int unitWidth) { return tableWidth / unitWidth; }
+	int getExcelRows(int unitHeight) { return tableHeight / unitHeight; }
+	// initializer of excelMat
+	void initExcelMat(int cols, int rows);
+	// fundamental calculation of rectangle's position
+	Point getPartPosition(Rect rect, int smallWidth, int smallHeight) { 
+		int row = rect.y / smallHeight; int col = rect.x / smallWidth; return Point(col, row);
+	}
+	// function to modify content of excelMat [replaceable!]
+	void insertExcelMat(Point pos, string text) { excelMat[pos.y][pos.x] = text; }
+	// function to get context of excelMat, using for file stream output
+	string getExcelContent(int col, int row) { return excelMat[row][col]; }
+	// sorting rectangles, preorder: y>>x>>width>>height
+	void sortRects();
 public:
+	// root path of this class, default should be "./output", 
+	// path name is append after this
 	static string rootPath;
 	static void setRootPath(string name) { rootPath = name; _mkdir(rootPath.c_str()); }
 
+	// the Constructor will parses image file name to directory name
 	TableImageInfo(string filename) { 
 		size_t posDot = filename.find_last_of("."); 
 		size_t posSlide = filename.find_last_of("/");
@@ -28,7 +57,7 @@ public:
 		//cout << pathName << endl;
 		_mkdir(pathName.c_str());
 	}
-
+	// getters
 	int getImageWidth() { return imageWidth; }
 	int getImageHeight() { return imageHeight; }
 	int getTableWidth() { return tableWidth; }
@@ -41,17 +70,21 @@ public:
 		}
 		else return rects[index].rect;
 	}
+	// setters
 	void setImageWidth(int width) { this->imageWidth = width; }
 	void setImageHeight(int height) { this->imageHeight = height; }
 	void setTableWidth(int width) { this->tableWidth = width; }
 	void setTableHeight(int height) { this->tableHeight = height; }
 	void insertRect(int index, Rect temp) { NotedRect nr; nr.index = index; nr.rect = temp; rects.push_back(nr); }
-
+	// opencv function : read image from image path
 	bool readImage(string path, Mat& img);
+	// opencv function : write cutted image to certain path
 	bool writeImagePart(string name, Mat&);
-
+	// read and write serialized information of THIS class object
 	void readFromFile();
 	void writeToFile();
+	// function to generate excel file [.csv]
+	void generateTable();
 };
 
 inline bool TableImageInfo::readImage(string path, Mat& img) {

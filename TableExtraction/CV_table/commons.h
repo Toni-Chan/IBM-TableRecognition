@@ -8,3 +8,6 @@
 
 #include <algorithm>
 #include <direct.h>
+
+using namespace std;
+using namespace cv;

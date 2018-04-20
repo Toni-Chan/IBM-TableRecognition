@@ -1,8 +1,6 @@
 #include "commons.h"
 #include "TableImage.h"
 
-using namespace std;
-
 int main(int argc, char** argv) {
 	string filename;
 	if (argc > 1) filename = argv[1];
