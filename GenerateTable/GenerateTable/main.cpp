@@ -27,6 +27,7 @@ int main(int argc, char** argv) {
 		//cout << tii.getImageWidth() << " " << tii.getImageWidth() << " " << tii.getNumberOfRectangle() << " " << endl;
 		//for (int j = 0; j < tii.getNumberOfRectangle(); j++)
 		//	cout << tii.getRect(j) << endl;
+		tii.readContent();
 		tii.generateTable();
 	}
 	//TableImage ti = TableImage(1001, "../mask.jpg");

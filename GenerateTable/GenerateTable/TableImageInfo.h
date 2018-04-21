@@ -1,5 +1,6 @@
 #pragma once
 #include "commons.h"
+#include <codecvt>
 
 // struct to save rectangle information and corresponding index
 // index is used for mapping to content
@@ -55,6 +56,12 @@ class TableImageInfo {
 	bool isFound(vector<int>&, int);
 	// write Mat to excel output
 	void writeMatToExcelFile();
+	// title content
+	string title;
+	// get content string from container
+	string getContent(int i);
+	// function to avoid special characters 
+	void parse(string&);
 public:
 	// root path of this class, default should be "./output", 
 	// path name is append after this
@@ -95,6 +102,8 @@ public:
 	// read and write serialized information of THIS class object
 	void readFromFile();
 	void writeToFile();
+	// read OCR output from txt file
+	void readContent();
 	// function to generate excel file [.csv]
 	void generateTable();
 };

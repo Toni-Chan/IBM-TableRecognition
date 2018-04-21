@@ -23,7 +23,7 @@ bld/
 [Oo]bj/
 
 # Run results
-[Oo]utput/
+#[Oo]utput/
 
 # Visual Studio 2015 cache/options directory
 .vs/

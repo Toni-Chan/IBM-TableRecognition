@@ -39,6 +39,7 @@ void TableImageInfo::readFromFile() {
 			rects.push_back(nr);
 		}
 	}
+	in.close();
 }
 
 void TableImageInfo::writeToFile() {
@@ -77,6 +78,9 @@ bool compareRects(NotedRect r1, NotedRect r2) {
 }
 
 void TableImageInfo::generateTable() {
+	if (content.size() == 0) {
+		cout << "Table content not read yet! Exiting." << endl;
+	}
 	cout << "Generating excel " << pathName << ".csv" << endl;
 	sortRects();
 	int smallWidth = getStandardWidth();
@@ -89,8 +93,8 @@ void TableImageInfo::generateTable() {
 
 	for (int i = 0; i < rects.size(); i++) {
 		Point pos = getPartPosition(rects[i].rect, smallWidth, smallHeight);
-		//string text = content[rects[i].index];
-		string text = to_string(rects[i].index);
+		string text = getContent(rects[i].index);
+		//string text = to_string(rects[i].index);
 		insertExcelTempMat(pos, text);
 	}
 
@@ -194,7 +198,7 @@ bool TableImageInfo::isFound(vector<int>& container, int coord) {
 
 void TableImageInfo::writeMatToExcelFile() {
 	ofstream out(pathName + ".csv");
-	out << pathName << "," << endl;
+	out << title << "," << endl;
 	int rows = excelMat.size();
 	int cols = excelMat[0].size();
 	for (int i = 0; i < rows; i++) {
@@ -202,5 +206,56 @@ void TableImageInfo::writeMatToExcelFile() {
 			out << getExcelContent(j, i) << ",";
 		}
 		out << endl;
+	}
+}
+
+void TableImageInfo::readContent() {
+	content.clear();
+	string path = pathName + "/title.jpg.txt";
+	ifstream in(path);
+	if (!in) title = " ";
+	else {
+		title = "";
+		string temp;
+		while (!in.eof()) {
+			getline(in, temp);
+			parse(temp);
+			title = title + " " + temp;
+		}
+	}
+	for (int i = 0; i < rects.size(); i++) {
+		string path = pathName + "/" + to_string(i) + ".jpg.txt";
+#ifdef _DEBUG
+		cout << path << endl;
+#endif
+		ifstream in(path);
+		if (!in) {
+			//cerr << "ERROR::READ_OCR_OUTPUT::FILE_NOT_EXIST" << endl;
+			content.push_back(" ");
+		}
+		else {
+			string str = "";
+			while (!in.eof()) {
+				string temp;
+				getline(in, temp, '\n');
+				parse(temp);
+				str = str + temp;
+			}
+			cout << str << endl;
+			content.push_back(str);
+		}
+		in.close();
+	}
+}
+
+string TableImageInfo::getContent(int index) {
+	if (index >= content.size()) return "";
+	else return content[index];
+}
+
+void TableImageInfo::parse(string& str) {
+	for (int i = 0; i < str.length(); i++) {
+		if (str[i] == ',') str[i] = '.';
+		if (str[i] == '\n') str[i] = ' ';
 	}
 }

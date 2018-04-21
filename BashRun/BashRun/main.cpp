@@ -1,5 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <iostream>
+#include <string>
+using namespace std;
 
 int main() {
 	system("TableExtraction.exe");
@@ -9,3 +12,4 @@ int main() {
 	system("GenerateTable.exe");
 	printf("Table generation completed\n");
 }
+
