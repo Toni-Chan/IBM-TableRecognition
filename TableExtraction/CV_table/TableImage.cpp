@@ -49,20 +49,21 @@ void TableImage::makeAlignment() {
 	int GRAY_THRESH = 150;
 	int HOUGH_VOTE = 100;
 	Mat padded;
+	// making proper borders for dft processing, image may be enlarged
 	int dftWidth = getOptimalDFTSize(proImg.rows);
 	int dftHeight = getOptimalDFTSize(proImg.cols);
 	copyMakeBorder(proImg, padded, 0, dftWidth - proImg.rows, 0, dftHeight - proImg.cols, BORDER_CONSTANT, Scalar::all(0));
 	copyMakeBorder(cutImg, padded, 0, dftWidth - proImg.rows, 0, dftHeight - proImg.cols, BORDER_CONSTANT, Scalar::all(0));
-
+	// prepare container for results (in x, y coordinate respectively)
 	Mat planes[] = { Mat_<float>(padded), Mat::zeros(padded.size(), CV_32F) };
 	Mat combinedImg;
 	merge(planes, 2, combinedImg);
-
+	// dft function
 	dft(combinedImg, combinedImg);
-
+	// split two channel into seperated matrices
 	split(combinedImg, planes);
 	magnitude(planes[0], planes[1], planes[0]);
-
+	// do plug-log calculation to adjust features into ranged magnitude
 	Mat magMat = planes[0];
 	magMat += Scalar::all(1);
 	log(magMat, magMat);
@@ -94,7 +95,7 @@ void TableImage::makeAlignment() {
 #ifdef _DEBUG
 	 show("magImg", magImg, 2);
 #endif
-
+	// Hough line voting to get the most conspicuous lines
 	vector<Vec2f> lines;
 	HoughLines(magImg, lines, 1, (double)CV_PI / 180, HOUGH_VOTE, 0, 0);
 
@@ -121,7 +122,7 @@ void TableImage::makeAlignment() {
 #ifdef _DEBUG
 	cout << "Alignment Degree:" << alignDegree << endl;
 #endif
-
+	// rotation
 	if (abs(angleD) > 0.6) {
 		Point center = Point(proImg.cols / 2, proImg.rows / 2);
 		Mat rotMat = getRotationMatrix2D(center, angleD, 1.0);
@@ -184,13 +185,15 @@ void TableImage::selectLargestBox() {
 	dilate(temp, temp, kernelD);
 	goodFeaturesToTrack(temp, corners, 4, 0.05, 30, noArray(), 9);
 
-	////cout << corners.size() << endl;
-	//for (int i = 0; i < corners.size(); i++) {
-	//	//cout << corners[i] << endl;
-	//	circle(temp, corners[i], 4, Scalar(255, 255, 255), 2);
-	//}
-	// show("select", temp, 2);
-	//waitKey(0);
+#ifdef _DEBUG
+	//cout << corners.size() << endl;
+	for (int i = 0; i < corners.size(); i++) {
+		//cout << corners[i] << endl;
+		circle(temp, corners[i], 16, Scalar(255, 0, 0), 12);
+	}
+	rectangle(temp, largeRect, Scalar(0, 0, 255), 12);
+	show("select", temp, 2);
+#endif
 
 	if (isTapezoid(corners, largeRect)) {
 		//cout << "is Tapezoid!" << endl;
@@ -307,18 +310,21 @@ void TableImage::distinguishStructures() {
 	////cout << lineHor.size() << endl;
 	for (size_t i = 0; i < lineHor.size(); i++) {
 		////cout << lineHor[i][0] << " " << lineHor[i][1] << " " << lineHor[i][2] << endl;
-		line(lineResult, Point(lineHor[i][0], lineHor[i][1]), Point(lineHor[i][0] + lineHor[i][2], lineHor[i][1]), Scalar(255, 255, 255), 3);
+		line(lineResult, Point(lineHor[i][0], lineHor[i][1]), Point(lineHor[i][0] + lineHor[i][2], lineHor[i][1]), Scalar(255, 255, 255), 2);
 	}
 	////cout << lineVer.size() << endl;
 	for (size_t i = 0; i < lineVer.size(); i++) {
 		////cout << lineVer[i][0] << " " << lineVer[i][1] << " " << lineVer[i][2] << endl;
-		line(lineResult, Point(lineVer[i][0], lineVer[i][1]), Point(lineVer[i][0] , lineVer[i][1] + lineVer[i][2]), Scalar(255, 255, 255), 3);
+		line(lineResult, Point(lineVer[i][0], lineVer[i][1]), Point(lineVer[i][0] , lineVer[i][1] + lineVer[i][2]), Scalar(255, 255, 255), 2);
 	}
 #ifdef _DEBUG
 	 show("lineResult", lineResult, 2);
 	 waitKey(0);
 #endif
 	//cout << "structure finding complete" << endl;
+
+	 show("lineResult", lineResult, 2);
+	 waitKey(0);
 }
 
 void TableImage::cutImage() {

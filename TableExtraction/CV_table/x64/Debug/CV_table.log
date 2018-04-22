@@ -1,15 +1,15 @@
 ﻿C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V140\Microsoft.CppBuild.targets(392,5): warning MSB8028: The intermediate directory (x64\Debug\) contains files shared from another project (CV_table.vcxproj).  This can lead to incorrect clean and rebuild behavior.
   TableImage.cpp
 d:\program files\projects\gitrepo\ibm\tableextraction\cv_table\tableimageinfo.h(65): warning C4267: “return”: 从“size_t”转换到“int”，可能丢失数据
-d:\program files\projects\gitrepo\ibm\tableextraction\cv_table\tableimage.cpp(133): warning C4244: “初始化”: 从“double”转换到“int”，可能丢失数据
-d:\program files\projects\gitrepo\ibm\tableextraction\cv_table\tableimage.cpp(166): warning C4267: “=”: 从“size_t”转换到“int”，可能丢失数据
-d:\program files\projects\gitrepo\ibm\tableextraction\cv_table\tableimage.cpp(198): warning C4244: “参数”: 从“int”转换到“float”，可能丢失数据
-d:\program files\projects\gitrepo\ibm\tableextraction\cv_table\tableimage.cpp(199): warning C4244: “参数”: 从“int”转换到“float”，可能丢失数据
-d:\program files\projects\gitrepo\ibm\tableextraction\cv_table\tableimage.cpp(200): warning C4244: “参数”: 从“int”转换到“float”，可能丢失数据
+d:\program files\projects\gitrepo\ibm\tableextraction\cv_table\tableimage.cpp(134): warning C4244: “初始化”: 从“double”转换到“int”，可能丢失数据
+d:\program files\projects\gitrepo\ibm\tableextraction\cv_table\tableimage.cpp(167): warning C4267: “=”: 从“size_t”转换到“int”，可能丢失数据
 d:\program files\projects\gitrepo\ibm\tableextraction\cv_table\tableimage.cpp(201): warning C4244: “参数”: 从“int”转换到“float”，可能丢失数据
-d:\program files\projects\gitrepo\ibm\tableextraction\cv_table\tableimage.cpp(504): warning C4244: “=”: 从“float”转换到“int”，可能丢失数据
-d:\program files\projects\gitrepo\ibm\tableextraction\cv_table\tableimage.cpp(508): warning C4244: “=”: 从“float”转换到“int”，可能丢失数据
-d:\program files\projects\gitrepo\ibm\tableextraction\cv_table\tableimage.cpp(517): warning C4244: “=”: 从“float”转换到“int”，可能丢失数据
-d:\program files\projects\gitrepo\ibm\tableextraction\cv_table\tableimage.cpp(521): warning C4244: “=”: 从“float”转换到“int”，可能丢失数据
+d:\program files\projects\gitrepo\ibm\tableextraction\cv_table\tableimage.cpp(202): warning C4244: “参数”: 从“int”转换到“float”，可能丢失数据
+d:\program files\projects\gitrepo\ibm\tableextraction\cv_table\tableimage.cpp(203): warning C4244: “参数”: 从“int”转换到“float”，可能丢失数据
+d:\program files\projects\gitrepo\ibm\tableextraction\cv_table\tableimage.cpp(204): warning C4244: “参数”: 从“int”转换到“float”，可能丢失数据
+d:\program files\projects\gitrepo\ibm\tableextraction\cv_table\tableimage.cpp(507): warning C4244: “=”: 从“float”转换到“int”，可能丢失数据
+d:\program files\projects\gitrepo\ibm\tableextraction\cv_table\tableimage.cpp(511): warning C4244: “=”: 从“float”转换到“int”，可能丢失数据
+d:\program files\projects\gitrepo\ibm\tableextraction\cv_table\tableimage.cpp(520): warning C4244: “=”: 从“float”转换到“int”，可能丢失数据
+d:\program files\projects\gitrepo\ibm\tableextraction\cv_table\tableimage.cpp(524): warning C4244: “=”: 从“float”转换到“int”，可能丢失数据
   CV_table.vcxproj -> D:\Program Files\Projects\GitRepo\IBM\TableExtraction\x64\Debug\TableExtraction.exe
   CV_table.vcxproj -> D:\Program Files\Projects\GitRepo\IBM\TableExtraction\x64\Debug\TableExtraction.pdb (Full PDB)
